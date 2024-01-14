@@ -1,46 +1,81 @@
 import { Injectable, Req, Res } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
+import { TrackingService } from './analytics-api';
+import { GuestUser } from './app.interface';
 
 @Injectable()
 export class AppService {
+  private readonly pageVariantCookieName = 'pageVariantAssigned';
+  private readonly guestUserIdCookieName = 'guestUserId';
+
+  constructor(private trackingService: TrackingService) {}
   getTestMessage(
     @Res({ passthrough: true }) response: Response,
     @Req() request: Request,
-  ): {
-    page_variant: number;
-  } {
-    const page_variant = this.getGuestUserCookies(response, request);
+  ): { pageVariant: number } {
+    const pageVariant = this.getGuestUserCookies(response, request);
 
-    this.getAnalyticsApi();
+    this.postAnalyticsApi(response, request);
 
     return {
-      page_variant: page_variant,
+      pageVariant,
     };
   }
 
   private getGuestUserCookies(response: Response, request: Request): number {
-    const existingCookie = request.cookies['guestUserId'];
-    let page_variant: number;
+    const existingCookie = request.cookies[this.guestUserIdCookieName];
+    let pageVariant: number;
 
     if (existingCookie) {
-      page_variant = request.cookies['page_variant_assigned'];
+      pageVariant = request.cookies[this.pageVariantCookieName];
     } else {
       // Choose a random page variant
-      page_variant = Math.round(Math.random());
+      pageVariant = Math.round(Math.random());
 
       // Generate a guest user ID
       const guestUserId = uuidv4();
 
       // Set cookies
-      response.cookie('page_variant_assigned', page_variant);
-      response.cookie('guestUserId', guestUserId);
+      this.setCookies(response, guestUserId, pageVariant);
     }
 
-    return page_variant;
+    return pageVariant;
   }
 
-  private getAnalyticsApi(): any {
-    console.log(`getAnalyticsApi`);
+  private setCookies(
+    response: Response,
+    guestUserId: string,
+    pageVariant: number,
+  ): void {
+    response.cookie(this.pageVariantCookieName, pageVariant);
+    response.cookie(this.guestUserIdCookieName, guestUserId);
+  }
+
+  private postAnalyticsApi(response: Response, request: Request): any {
+    console.log(`postAnalyticsApi`);
+
+    const getGuestUserNetworkInfo: GuestUser = this.getGuestUserInfo(
+      response,
+      request,
+    );
+
+    this.trackingService.trackPageview(getGuestUserNetworkInfo);
+    this.trackingService.trackEvent(getGuestUserNetworkInfo);
+  }
+
+  private getGuestUserInfo(response: Response, request: Request): GuestUser {
+    console.log('getGuestUserInfo');
+
+    const domainVisited = 'https://ab-testing.adaptable.app';
+    const ipAddress = request.socket.remoteAddress;
+    const createdAt = new Date();
+    const userAgent = request.headers['user-agent'] || 'empty';
+    return {
+      domainVisited,
+      ipAddress,
+      createdAt,
+      userAgent,
+    };
   }
 }
