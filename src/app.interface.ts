@@ -4,3 +4,10 @@ export interface GuestUser {
   readonly createdAt?: Date;
   readonly userAgent: string;
 }
+
+export interface ClickEventData {
+  readonly clickedElementId: string,
+  readonly clickedElementText: string,
+  readonly name: string,
+  readonly version: number,
+}

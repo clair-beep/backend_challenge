@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { GuestUser } from './app.interface';
+import { ClickEventData, GuestUser } from './app.interface';
 import { HttpService } from '@nestjs/axios';
 import { catchError, firstValueFrom } from 'rxjs';
 import { AxiosError } from 'axios';
@@ -23,10 +23,22 @@ export class TrackingService {
     return data;
   }
 
-  async trackEvent(params: GuestUser): Promise<any> {
+  async trackEvent(guestUser: GuestUser, clickEventData: ClickEventData): Promise<any> {
     console.log(
-      `--> Tracking Event: ${params.domainVisited} from IP: ${params.ipAddress} that was visited at: ${params.createdAt} and this is the user agent: ${params.userAgent}`,
+      `--> Tracking Event: ${guestUser.domainVisited} from IP: ${guestUser.ipAddress} that was visited at: ${guestUser.createdAt} and this is the user agent: ${guestUser.userAgent}`,
     );
-    // Add logic to send the data to your actual analytics server or service
+
+    console.log(`Related to the click event: ${clickEventData.clickedElementId}, ${clickEventData.clickedElementText}, ${clickEventData.name}, ${clickEventData.version}`)
+
+
+    const { data } = await firstValueFrom(
+      this.httpService.post<any>('http://localhost:3000/event', { guestUser, clickEventData }).pipe(
+        catchError((error: AxiosError) => {
+          console.log(error.response.data);
+          throw 'An error happened!';
+        }),
+      ),
+    );
+    return data;
   }
 }

@@ -2,7 +2,7 @@ import { Injectable, Req, Res } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import { TrackingService } from './analytics-api';
-import { GuestUser } from './app.interface';
+import { ClickEventData, GuestUser } from './app.interface';
 
 @Injectable()
 export class AppService {
@@ -61,7 +61,19 @@ export class AppService {
     );
 
     this.trackingService.trackPageview(getGuestUserNetworkInfo);
-    this.trackingService.trackEvent(getGuestUserNetworkInfo);
+
+  }
+
+  private postAnalyticsApiEvents(response: Response, request: Request, clickEventData: ClickEventData): any {
+    console.log(`postAnalyticsApiEvents`);
+
+    const getGuestUserNetworkInfo: GuestUser = this.getGuestUserInfo(
+      response,
+      request,
+    );
+
+    console.log(`getGuestUserNetworkInfo`, getGuestUserNetworkInfo)
+    this.trackingService.trackEvent(getGuestUserNetworkInfo, clickEventData);
   }
 
   private getGuestUserInfo(response: Response, request: Request): GuestUser {
@@ -77,5 +89,13 @@ export class AppService {
       createdAt,
       userAgent,
     };
+  }
+
+  getGuestUserClickEvent(response: Response,
+    @Req() request: Request, clickEventData: ClickEventData) {
+    console.log(`Clicked!`);
+
+    this.postAnalyticsApiEvents(response, request, clickEventData);
+
   }
 }

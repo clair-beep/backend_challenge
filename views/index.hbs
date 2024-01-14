@@ -28,10 +28,42 @@
 
     <div>
       Thanks a lot for reading the article!
-      <a href='/signup'>SIGN UP</a>
+      <a href='/signup' id='signUpButton'>SIGN UP</a>
       for Blinkist.
     </div>
-    {{message}}
-  </body>
 
+    {{message}}
+
+  </body>
+<script>
+  document.getElementById("signUpButton").addEventListener("click", function() {
+    console.log("Name Cannot be empty!");
+
+
+  const clickEventData = {
+    clickedElementId: 'signUpButton',
+  clickedElementText: document.getElementById('signUpButton').textContent,
+   name: navigator.appName,
+    version: navigator.appVersion,
+
+  };
+
+
+    // Make a POST request to the /log endpoint
+    fetch('/clickEvent', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json', // adjust the content type if needed
+      },
+    body: JSON.stringify(clickEventData),
+
+    })
+      .then(data => {
+        console.log('Server response:', data);
+      })
+      .catch(error => {
+        console.error('Error during fetch operation:', error);
+      });
+  });
+</script>
 </html>
