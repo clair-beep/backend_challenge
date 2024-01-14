@@ -50,7 +50,6 @@ export class AppController {
     @Res() response: Response,
     @Body() clickEventData: ClickEventData,
   ) {
-    console.log(`Clicked!`);
     this.appService.getGuestUserClickEvent(response, request, clickEventData);
   }
 }

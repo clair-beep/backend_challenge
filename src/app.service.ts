@@ -53,8 +53,6 @@ export class AppService {
   }
 
   private postAnalyticsApi(response: Response, request: Request): any {
-    console.log(`postAnalyticsApi`);
-
     const getGuestUserNetworkInfo: GuestUser = this.getGuestUserInfo(
       response,
       request,
@@ -68,20 +66,15 @@ export class AppService {
     request: Request,
     clickEventData: ClickEventData,
   ): any {
-    console.log(`postAnalyticsApiEvents`);
-
     const getGuestUserNetworkInfo: GuestUser = this.getGuestUserInfo(
       response,
       request,
     );
 
-    console.log(`getGuestUserNetworkInfo`, getGuestUserNetworkInfo);
     this.trackingService.trackEvent(getGuestUserNetworkInfo, clickEventData);
   }
 
   private getGuestUserInfo(response: Response, request: Request): GuestUser {
-    console.log('getGuestUserInfo');
-
     const domainVisited = 'https://ab-testing.adaptable.app';
     const ipAddress = request.socket.remoteAddress;
     const createdAt = new Date();
@@ -91,7 +84,6 @@ export class AppService {
         ? 'testVariation'
         : 'controlVariation';
 
-    console.log(`pageVariant`, pageVariant);
     return {
       domainVisited,
       ipAddress,
@@ -106,8 +98,6 @@ export class AppService {
     @Req() request: Request,
     clickEventData: ClickEventData,
   ) {
-    console.log(`Clicked!`);
-
     this.postAnalyticsApiEvents(response, request, clickEventData);
   }
 }
