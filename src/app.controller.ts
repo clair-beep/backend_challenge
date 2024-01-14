@@ -24,7 +24,7 @@ export class AppController {
     const { pageVariant } = this.appService.getTestMessage(response, request);
     return { pageVariant };
   }
-  
+
   @Version('1')
   @Get('/signup')
   async getSignUp(): Promise<any> {
@@ -45,9 +45,12 @@ export class AppController {
 
   @Version('1')
   @Post('/clickEvent')
-  getGuestUserClickEvent(@Req() request: Request, @Res() response: Response, @Body() clickEventData: ClickEventData) {
-    
+  getGuestUserClickEvent(
+    @Req() request: Request,
+    @Res() response: Response,
+    @Body() clickEventData: ClickEventData,
+  ) {
     console.log(`Clicked!`);
-    this.appService.getGuestUserClickEvent(response,request, clickEventData)
+    this.appService.getGuestUserClickEvent(response, request, clickEventData);
   }
 }

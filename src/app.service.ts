@@ -61,10 +61,13 @@ export class AppService {
     );
 
     this.trackingService.trackPageview(getGuestUserNetworkInfo);
-
   }
 
-  private postAnalyticsApiEvents(response: Response, request: Request, clickEventData: ClickEventData): any {
+  private postAnalyticsApiEvents(
+    response: Response,
+    request: Request,
+    clickEventData: ClickEventData,
+  ): any {
     console.log(`postAnalyticsApiEvents`);
 
     const getGuestUserNetworkInfo: GuestUser = this.getGuestUserInfo(
@@ -72,7 +75,7 @@ export class AppService {
       request,
     );
 
-    console.log(`getGuestUserNetworkInfo`, getGuestUserNetworkInfo)
+    console.log(`getGuestUserNetworkInfo`, getGuestUserNetworkInfo);
     this.trackingService.trackEvent(getGuestUserNetworkInfo, clickEventData);
   }
 
@@ -83,19 +86,28 @@ export class AppService {
     const ipAddress = request.socket.remoteAddress;
     const createdAt = new Date();
     const userAgent = request.headers['user-agent'] || 'empty';
+    const pageVariant =
+      request.cookies[this.pageVariantCookieName] === '1'
+        ? 'testVariation'
+        : 'controlVariation';
+
+    console.log(`pageVariant`, pageVariant);
     return {
       domainVisited,
       ipAddress,
       createdAt,
       userAgent,
+      pageVariant,
     };
   }
 
-  getGuestUserClickEvent(response: Response,
-    @Req() request: Request, clickEventData: ClickEventData) {
+  getGuestUserClickEvent(
+    response: Response,
+    @Req() request: Request,
+    clickEventData: ClickEventData,
+  ) {
     console.log(`Clicked!`);
 
     this.postAnalyticsApiEvents(response, request, clickEventData);
-
   }
 }
