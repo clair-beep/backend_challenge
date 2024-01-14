@@ -1,4 +1,3 @@
-````markdown
 # A/B Testing
 
 ## Requirements
@@ -6,11 +5,11 @@
 ```bash
 Node
 ```
-````
 
 ## Installation
 
 ```bash
+#Install
 $ npm install
 ```
 
@@ -60,8 +59,3 @@ For the test variation, update the content within the `<div>` tags to represent 
 1. Ensure all changes are saved in the `index.hbs` file.
 2. Deploy the updated code to your development or testing environment.
 3. Conduct A/B testing, collect data, and analyze the results.
-
-```
-
-In this improved version, I've formatted the headings, code snippets, and instructions for better clarity and readability. Additionally, I added numbered steps under "Running the Project" for a more structured approach. Feel free to adjust it further based on your preferences.
-```
